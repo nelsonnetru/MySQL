@@ -1,5 +1,7 @@
 USE test_db;
 
+-- Homework_05 Cars.sql для заполнения таблицы cars
+
 -- Создайте представление, в которое попадут автомобили стоимостью  до 25 000 долларов
 CREATE VIEW cars_filter AS 
 SELECT * FROM cars 
@@ -36,7 +38,7 @@ ord_datetime — дата и время заказа;
 ord_an — ID анализа.
 */
 
-CREATE TABLE Groups 
+CREATE TABLE Groups_alt
 (
 	gr_id INT PRIMARY KEY auto_increment, 
     gr_name VARCHAR(45) NOT NULL,
@@ -50,7 +52,7 @@ CREATE TABLE Analysis
     an_cost INT NOT NULL, 
     an_price INT NOT NULL, 
     an_group INT NOT NULL, 
-	FOREIGN KEY (an_group) REFERENCES Groups (gr_id)
+	FOREIGN KEY (an_group) REFERENCES Groups_alt (gr_id)
 );
 
 CREATE TABLE Orders 
@@ -61,7 +63,9 @@ CREATE TABLE Orders
     FOREIGN KEY (ord_an) REFERENCES Analysis (an_id)
 );
 
-INSERT INTO Groups (gr_name, gr_temp) 
+-- Homework_05 Analysis.sql для заполнения таблицы orders
+
+INSERT INTO Groups_alt (gr_name, gr_temp) 
 VALUES 
 ("Биохимический", "HOT"),
 ("Общий", "COLD"),
@@ -75,6 +79,13 @@ VALUES
 ("Тест COVID", 670, 1000, 1),
 ("Инфекционный", 7500, 12300, 3),
 ("Аллергический", 8000, 14500, 3);
+
+SELECT ord_id, an_name, an_price, ord_datetime 
+FROM orders 
+LEFT JOIN analysis ON ord_an = an_id 
+WHERE 
+ord_datetime >= "2020-02-05" AND ord_datetime <= ("2020-02-05" + INTERVAL 1 WEEK) 
+ORDER BY ord_datetime;
 
 /*
 Добавьте новый столбец под названием «время до следующей станции». Чтобы получить это значение, 
@@ -101,3 +112,8 @@ VALUES
 (120, "San Francisco", "11:00:00"),
 (120, "Palo Alto", "12:49:00"),
 (120, "San Jose", "13:30:00");
+
+SELECT train_id, station, station_time, 
+SUBTIME(LEAD(station_time) OVER(PARTITION BY train_id ORDER BY train_id), station_time)
+AS time_to_next_station
+FROM Train;
